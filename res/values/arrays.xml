@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="temp">
+        <item>Celcius</item>
+        <item>Fahrenheit‎</item>
+    </string-array>
+    
+    <string-array name="tempValues">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    
+    <string-array name="wind">
+        <item>MPH</item>
+        <item>KPH</item>
+    </string-array>
+    
+    <string-array name="windValues">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>

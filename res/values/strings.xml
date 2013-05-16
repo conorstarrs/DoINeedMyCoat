@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Do I Need My Coat?</string>
+    <string name="dummy_button">Refresh</string>
+    <string name="dummy_content"></string>
+
+</resources>
