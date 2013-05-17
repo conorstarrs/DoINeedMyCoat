@@ -71,6 +71,8 @@ public class FullscreenActivity extends Activity {
     
     QueryYahooForWOEIDTask yQ;
     QueryYahooForWeatherTask yW;
+
+    boolean isUSorCA = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,15 +108,15 @@ public class FullscreenActivity extends Activity {
 				city = "Location not found :-(\n";
 				country = "Country not found :-(";
 			}
-			
+
 	    	Toast.makeText(getApplicationContext(), "Found you in " + city + ".", Toast.LENGTH_SHORT).show();
-			
+
 			    Context context = FullscreenActivity.this;
 			    ProgressDialog progressDialog = new ProgressDialog(context);
-			
+
 		        yQ = new QueryYahooForWOEIDTask(this, progressDialog);
 		        yQ.execute(locInfo.getLatitude(), locInfo.getLongitude());
-		    	
+
 		    	TextView txtView = (TextView) findViewById(R.id.fullscreen_content);
 		    	txtView.setText(city + ", " + country);
 	//	        txtView.setPadding(0, 0, 0, 195);
@@ -125,11 +127,11 @@ public class FullscreenActivity extends Activity {
 			ImageView imgView = (ImageView) findViewById(R.id._0);
 			imgView.setImageResource(R.drawable._na);
 			imgView.setVisibility(1); //visible	
-			
+
 	    	TextView noNetworkText = (TextView) findViewById(R.id.reason);
 	    	noNetworkText.setText("No network connection :-(");
 	   	}
-	   
+
         super.onCreate(savedInstanceState);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
@@ -203,7 +205,7 @@ public class FullscreenActivity extends Activity {
 		LocationInfoVO locInfoVO = new LocationInfoVO();
 		double latitude = 0.0;
 		double longitude = 0.0;
-		
+
 		// create class object
         gps = new GPSInformation(FullscreenActivity.this);
 
@@ -222,16 +224,16 @@ public class FullscreenActivity extends Activity {
 
 		Geocoder gcd = new Geocoder(this, Locale.getDefault());
 		List<Address> addresses = null;
-		
+
 		try {
 			addresses = gcd.getFromLocation(latitude, longitude, 1);
 		} catch (IOException e) {
 		}
-		
+
 		locInfoVO.setAddress(addresses);
 		locInfoVO.setLatitude(String.valueOf(latitude));
 		locInfoVO.setLongitude(String.valueOf(longitude));
-		
+
 		return locInfoVO;
 	}
 
@@ -291,14 +293,14 @@ public class FullscreenActivity extends Activity {
         yW = new QueryYahooForWeatherTask(this, progressDialog);
         yW.execute(result); 
 	}
-	
+
 	public void weatherObtained(Document result) {
     	NodeList n = result.getElementsByTagName("yweather:condition");
-    	result.getElementById("yweather:astronomy");
-		String wearCoat = "";
+
     	String code = n.item(0).getAttributes().getNamedItem("code").getTextContent();
     	String text = n.item(0).getAttributes().getNamedItem("text").getTextContent();
     	String temp = n.item(0).getAttributes().getNamedItem("temp").getTextContent();
+    	String wearCoat = "";
     	String reason = "";
     	String sunrise = result.getElementsByTagName("yweather:astronomy").
     			item(0).getAttributes().getNamedItem("sunrise").getNodeValue();
@@ -310,8 +312,19 @@ public class FullscreenActivity extends Activity {
     			item(0).getAttributes().getNamedItem("direction").getNodeValue();
     	double convertWindToMph = 0.0;
     	double directionDouble = 0.0;
-    	
+		double tempToFarenheit = 0.0;
+		String degreesType = "\u2103";
+
+		if(isUSorCA && temp != null)
+		{
+			tempToFarenheit = Double.parseDouble(temp) * 9 / 5 + 32;
+    		DecimalFormat df = new DecimalFormat("#");
+    		temp = df.format(tempToFarenheit);
+    		degreesType = "\u2109";
+		}    	
+
     	int weatherCode = 0;
+    	
     	if(code != null)
     	{
     		weatherCode = Integer.parseInt(code);
@@ -354,17 +367,17 @@ public class FullscreenActivity extends Activity {
 			wearCoat = "N/A";
 			reason = "Weather not available :-(";
 		}
-		
+
 		ImageView imgView = (ImageView) findViewById(R.id._0);
 		imgView.setImageResource(getWeatherImage(weatherCode));
 		imgView.setVisibility(1); //visible	
-		
+
     	TextView weatherResult = (TextView) findViewById(R.id.weatherResult);
     	weatherResult.setText(wearCoat);
     	weatherResult.setPadding(0, 10, 0, 10);
     	
     	TextView weatherText = (TextView) findViewById(R.id.weatherText);
-    	weatherText.setText(text + ", " + temp +  "\u2103");
+    	weatherText.setText(text + ", " + temp + degreesType);
     	
     	TextView weatherText2 = (TextView) findViewById(R.id.weatherText2);
     	weatherText2.setText("\nWind: " + windSpeed + "mph, Direction: " + 
@@ -375,7 +388,7 @@ public class FullscreenActivity extends Activity {
     	TextView reasonText = (TextView) findViewById(R.id.reason);
     	reasonText.setText(reason); 
 	}
-	
+
 	private boolean isNetworkConnected() {
 		  ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		  NetworkInfo ni = cm.getActiveNetworkInfo();
@@ -385,7 +398,7 @@ public class FullscreenActivity extends Activity {
 		  } else
 		   return true;
 		 }
-	
+
 	public static String headingToString(double x)
 	{
 		String directions[] = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
@@ -393,7 +406,7 @@ public class FullscreenActivity extends Activity {
 	}
 
 	private int getWeatherImage(int weatherCode) {
-		
+
 		int image = 0;
 
         switch (weatherCode) {
@@ -496,7 +509,7 @@ public class FullscreenActivity extends Activity {
             default: image = R.drawable._na;
                      break;
         }
-		
+
 		return image;
 	}
 
@@ -507,13 +520,13 @@ public class FullscreenActivity extends Activity {
 		{
 			isCold = true;
 		}
-		
+
 		return isCold;
 	}
 
 	private boolean isPrecipitation(int weatherCode) {
 		boolean isPrecipitation = false;
-		
+
 		if(weatherCode == WeatherCodeType.SNOW
 				|| weatherCode == WeatherCodeType.TORNADO
 				|| weatherCode == WeatherCodeType.TROPICAL_STORM
@@ -553,7 +566,7 @@ public class FullscreenActivity extends Activity {
 		{
 			isPrecipitation = true;
 		}
-		
+
 		return isPrecipitation;
 	}
 
