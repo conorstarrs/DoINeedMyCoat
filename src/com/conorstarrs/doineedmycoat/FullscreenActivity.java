@@ -75,6 +75,10 @@ public class FullscreenActivity extends Activity {
     boolean isUSorCA = false;
     String degreesType = "\u2103";
     Document mWeatherObtained = null;
+
+    private Button refreshButton;
+    private TextView tempText;
+    private GPSInformation gps;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +118,7 @@ public class FullscreenActivity extends Activity {
 			if(locInfo.getAddress().get(0).getCountryCode().equals("US")
 				|| locInfo.getAddress().get(0).getCountryCode().equals("CA"))
 			{
-				isUSorCA = true;
+				this.isUSorCA = true;
 			}
 
 	    	Toast.makeText(getApplicationContext(), "Found you in " + city + ".", Toast.LENGTH_SHORT).show();
@@ -133,31 +137,32 @@ public class FullscreenActivity extends Activity {
     	    	@Override
     	    	public void onClick(View v) 
     	    	{
-    	    		    String temp = mWeatherObtained.getElementsByTagName("yweather:condition").item(0).
+    	    		    String temp = this.mWeatherObtained.getElementsByTagName("yweather:condition").item(0).
     	    				getAttributes().getNamedItem("code").getTextContent();
-    	    			String text = mWeatherObtained.getElementsByTagName("yweather:condition").item(0).
+    	    			String text = this.mWeatherObtained.getElementsByTagName("yweather:condition").item(0).
     	    				getAttributes().getNamedItem("text").getTextContent();	
     	    		    double tempConversion = 0.0;
 
-    	    			if(degreesType.equals("\u2103"))
+    	    			if(this.degreesType.equals("\u2103"))
     	    			{
     	    				tempConversion = Double.parseDouble(temp) * 9 / 5 + 32;
     						DecimalFormat df = new DecimalFormat("#");
     						temp = df.format(tempConversion);
-    						degreesType = "\u2109";
+    						this.degreesType = "\u2109";
     					}
     					else
     					{
     	    				tempConversion = (Double.parseDouble(temp) - 32) *5 / 9;
     						DecimalFormat df = new DecimalFormat("#");
     						temp = df.format(tempConversion);
-    						degreesType = "\u2103";
+    						this.degreesType = "\u2103";
     					}
 
     					TextView weatherText = (TextView) findViewById(R.id.weatherText);
-    					weatherText.setText(text + ", " + temp + degreesType);	
+    					weatherText.setText(text + ", " + temp + this.degreesType);	
     	    		}
     	  		});
+		
 	    	}
     	}
 	    else
@@ -234,10 +239,6 @@ public class FullscreenActivity extends Activity {
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
-
-    private Button refreshButton;
-    
-    private GPSInformation gps;
     
 	private LocationInfoVO locationInfo() {
 		LocationInfoVO locInfoVO = new LocationInfoVO();
@@ -351,12 +352,12 @@ public class FullscreenActivity extends Activity {
     	double directionDouble = 0.0;
 		double tempToFarenheit = 0.0;
 
-		if(isUSorCA && temp != null)
+		if(this.isUSorCA && temp != null)
 		{
 			tempToFarenheit = Double.parseDouble(temp) * 9 / 5 + 32;
     		DecimalFormat df = new DecimalFormat("#");
     		temp = df.format(tempToFarenheit);
-    		degreesType = "\u2109";
+    		this.degreesType = "\u2109";
 		}    	
 
     	int weatherCode = 0;
@@ -413,7 +414,7 @@ public class FullscreenActivity extends Activity {
     	weatherResult.setPadding(0, 10, 0, 10);
     	
     	TextView weatherText = (TextView) findViewById(R.id.weatherText);
-    	weatherText.setText(text + ", " + temp + degreesType);
+    	weatherText.setText(text + ", " + temp + this.degreesType);
     	
     	TextView weatherText2 = (TextView) findViewById(R.id.weatherText2);
     	weatherText2.setText("\nWind: " + windSpeed + "mph, Direction: " + 
