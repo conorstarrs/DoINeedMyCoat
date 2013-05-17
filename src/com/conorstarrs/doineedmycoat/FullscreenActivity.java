@@ -10,8 +10,10 @@ import org.w3c.dom.NodeList;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
@@ -72,13 +74,16 @@ public class FullscreenActivity extends Activity {
     QueryYahooForWOEIDTask yQ;
     QueryYahooForWeatherTask yW;
 
-    boolean isUSorCA = false;
-    String degreesType = "\u2103";
-    Document yahooWeatherXML = null;
+    boolean isUS = false;
+    private String degreesType = "\u2103";
+    private String temp = "";
+    private Document yahooWeatherXML = null;
 
     private Button refreshButton;
     private TextView tempText;
     private GPSInformation gps;
+    
+    public static final String PREFS_NAME = "MyPrefsFile";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,10 +120,9 @@ public class FullscreenActivity extends Activity {
 				country = "Country not found :-(";
 			}
 
-			if(locInfo.getAddress().get(0).getCountryCode().equals("US")
-				|| locInfo.getAddress().get(0).getCountryCode().equals("CA"))
+			if(locInfo.getAddress().get(0).getCountryCode().equals("US"))
 			{
-				this.isUSorCA = true;
+				this.isUS = true;
 			}
 
 	    	Toast.makeText(getApplicationContext(), "Found you in " + city + ".", Toast.LENGTH_SHORT).show();
@@ -130,50 +134,52 @@ public class FullscreenActivity extends Activity {
 		        yQ.execute(locInfo.getLatitude(), locInfo.getLongitude());
 
 		    	TextView txtView = (TextView) findViewById(R.id.fullscreen_content);
-		    	txtView.setText(city + ", " + country);
+		    	txtView.setText(city + ", " + country);        		
+        		
+        		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        		boolean dialogShown = settings.getBoolean("dialogShown", false);
 
-        		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        		if (settings.getBoolean("isFirstRun", true)) {
+        		if (!dialogShown) {
+           			new AlertDialog.Builder(this)
+       				.setTitle("Welcome!")
+       				.setMessage("Thanks for downloading and installing \"Do I Need My Coat?\". " +
+       						"You can toggle between Celsius and Fahrenheit " +
+       						"by touching the temperature." +
+       						"This notice will not show again. Enjoy. :-)")
+       				.show();
 
-        			new AlertDialog.Builder(this)
-    				.setTitle("Welcome!")
-    				.setMessage("Hi, thanks for downloading and installing the - Do I Need My Coat? - app. Please note that you can change
-    					the temperature units by touching the temperature. This notice will not show again. Enjoy. :-)")
-    				.show();
-
-            		SharedPreferences.Editor editor = settings.edit();
-            		editor.putBoolean("isFirstRun", false);
-            		editor.commit();
+        		     SharedPreferences.Editor editor = settings.edit();
+        		     editor.putBoolean("dialogShown", true);
+        		     editor.commit();  
         		}
+        		
 
-    			this.tempText = (Button)this.findViewById(R.id.weatherText);
+    			this.tempText = (TextView)this.findViewById(R.id.weatherText);
     	 		this.tempText.setOnClickListener(new OnClickListener() {
     	    	@Override
     	    	public void onClick(View v) 
     	    	{
-    	    		    String temp = getYahooWeatherXML().getElementsByTagName("yweather:condition").item(0).
-    	    				getAttributes().getNamedItem("code").getTextContent();
     	    			String text = getYahooWeatherXML().getElementsByTagName("yweather:condition").item(0).
     	    				getAttributes().getNamedItem("text").getTextContent();	
     	    		    double tempConversion = 0.0;
 
-    	    			if(this.degreesType.equals("\u2103"))
+    	    			if(getDegreesType().equals("\u2103"))
     	    			{
     	    				tempConversion = Double.parseDouble(temp) * 9 / 5 + 32;
     						DecimalFormat df = new DecimalFormat("#");
-    						temp = df.format(tempConversion);
-    						this.degreesType = "\u2109";
+    						setTemp(df.format(tempConversion));
+    						setDegreesType("\u2109");
     					}
     					else
     					{
     	    				tempConversion = (Double.parseDouble(temp) - 32) *5 / 9;
     						DecimalFormat df = new DecimalFormat("#");
-    						temp = df.format(tempConversion);
-    						this.degreesType = "\u2103";
+    						setTemp(df.format(tempConversion));
+    						setDegreesType("\u2103");
     					}
 
     					TextView weatherText = (TextView) findViewById(R.id.weatherText);
-    					weatherText.setText(text + ", " + temp + this.degreesType);	
+    					weatherText.setText(text + ", " + getTemp() + getDegreesType());	
     	    		}
     	  		});
 		
@@ -351,7 +357,7 @@ public class FullscreenActivity extends Activity {
     	NodeList n = result.getElementsByTagName("yweather:condition");
     	String code = n.item(0).getAttributes().getNamedItem("code").getTextContent();
     	String text = n.item(0).getAttributes().getNamedItem("text").getTextContent();
-    	String temp = n.item(0).getAttributes().getNamedItem("temp").getTextContent();
+    	setTemp(n.item(0).getAttributes().getNamedItem("temp").getTextContent());
     	String wearCoat = "";
     	String reason = "";
     	String sunrise = result.getElementsByTagName("yweather:astronomy").
@@ -366,11 +372,11 @@ public class FullscreenActivity extends Activity {
     	double directionDouble = 0.0;
 		double tempToFarenheit = 0.0;
 
-		if(this.isUSorCA && temp != null)
+		if(this.isUS && getTemp() != null)
 		{
-			tempToFarenheit = Double.parseDouble(temp) * 9 / 5 + 32;
+			tempToFarenheit = Double.parseDouble(getTemp()) * 9 / 5 + 32;
     		DecimalFormat df = new DecimalFormat("#");
-    		temp = df.format(tempToFarenheit);
+    		setTemp(df.format(tempToFarenheit));
     		this.degreesType = "\u2109";
 		}    	
 
@@ -393,22 +399,22 @@ public class FullscreenActivity extends Activity {
     		directionDouble = Double.parseDouble(windDirection);
     	}
     	
-		if(isPrecipitation(weatherCode) && isCold(temp))
+		if(isPrecipitation(weatherCode) && isCold(getTemp(), getDegreesType()))
 		{
 			wearCoat = "YES";
-			reason = "(It's cold and wet)";
+			reason = "It's cold and wet";
 		}
-		else if(isPrecipitation(weatherCode) && !isCold(temp))
+		else if(isPrecipitation(weatherCode) && !isCold(getTemp(), getDegreesType()))
 		{
 			wearCoat = "YES";
-			reason = "(It's wet)";
+			reason = "It's wet";
 		}
-		else if(!isPrecipitation(weatherCode) && isCold(temp))
+		else if(!isPrecipitation(weatherCode) && isCold(getTemp(), getDegreesType()))
 		{
 			wearCoat = "YES";
-			reason = "(It's cold)";
+			reason = "It's cold";
 		}
-		else if(!isPrecipitation(weatherCode) && !isCold(temp))
+		else if(!isPrecipitation(weatherCode) && !isCold(getTemp(), getDegreesType()))
 		{
 			wearCoat = "NO";
 			reason = "Yay - good weather :-)";
@@ -428,7 +434,7 @@ public class FullscreenActivity extends Activity {
     	weatherResult.setPadding(0, 10, 0, 10);
     	
     	TextView weatherText = (TextView) findViewById(R.id.weatherText);
-    	weatherText.setText(text + ", " + temp + this.degreesType);
+    	weatherText.setText(text + ", " + getTemp() + this.degreesType);
     	
     	TextView weatherText2 = (TextView) findViewById(R.id.weatherText2);
     	weatherText2.setText("\nWind: " + windSpeed + "mph, Direction: " + 
@@ -564,10 +570,15 @@ public class FullscreenActivity extends Activity {
 		return image;
 	}
 
-	private boolean isCold(String temp) {
+	private boolean isCold(String temp, String degreesType) {
 		boolean isCold = false;
 
-		if(Integer.parseInt(temp) <= 15)
+		if(Integer.parseInt(temp) <= 15 && degreesType.equals("\u2103"))
+		{
+			isCold = true;
+		}
+		
+		if(Integer.parseInt(temp) <= 59 && degreesType.equals("\u2109"))
 		{
 			isCold = true;
 		}
@@ -623,12 +634,32 @@ public class FullscreenActivity extends Activity {
 
 	public Document getYahooWeatherXML()
     {
-    	this.yahooWeatherXML;
+		return this.yahooWeatherXML;
     }
 
     public void setYahooWeatherXML(Document doc)
     {
     	this.yahooWeatherXML = doc;
+    }
+    
+	public String getDegreesType()
+    {
+		return this.degreesType;
+    }
+	
+	public void setDegreesType(String d)
+    {
+		this.degreesType = d;
+    }
+	
+	public String getTemp()
+    {
+		return this.temp;
+    }
+	
+	public void setTemp(String t)
+    {
+		this.temp = t;
     }
 
 }
