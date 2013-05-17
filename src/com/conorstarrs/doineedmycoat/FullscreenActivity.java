@@ -132,6 +132,20 @@ public class FullscreenActivity extends Activity {
 		    	TextView txtView = (TextView) findViewById(R.id.fullscreen_content);
 		    	txtView.setText(city + ", " + country);
 
+        		SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        		if (settings.getBoolean("isFirstRun", true)) {
+
+        			new AlertDialog.Builder(this)
+    				.setTitle("Welcome!")
+    				.setMessage("Hi, thanks for downloading and installing the - Do I Need My Coat? - app. Please note that you can change
+    					the temperature units by touching the temperature. This notice will not show again. Enjoy. :-)")
+    				.show();
+
+            		SharedPreferences.Editor editor = settings.edit();
+            		editor.putBoolean("isFirstRun", false);
+            		editor.commit();
+        		}
+
     			this.tempText = (Button)this.findViewById(R.id.weatherText);
     	 		this.tempText.setOnClickListener(new OnClickListener() {
     	    	@Override
