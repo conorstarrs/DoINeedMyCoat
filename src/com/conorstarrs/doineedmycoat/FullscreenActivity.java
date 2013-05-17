@@ -109,6 +109,12 @@ public class FullscreenActivity extends Activity {
 				country = "Country not found :-(";
 			}
 
+			if(locInfo.getAddress().get(0).getCountryCode().equals("US")
+				|| locInfo.getAddress().get(0).getCountryCode().equals("CA"))
+			{
+				isUSorCA = true;
+			}
+
 	    	Toast.makeText(getApplicationContext(), "Found you in " + city + ".", Toast.LENGTH_SHORT).show();
 
 			    Context context = FullscreenActivity.this;
