@@ -74,7 +74,7 @@ public class FullscreenActivity extends Activity {
 
     boolean isUSorCA = false;
     String degreesType = "\u2103";
-    Document mWeatherObtained = null;
+    Document yahooWeatherXML = null;
 
     private Button refreshButton;
     private TextView tempText;
@@ -137,9 +137,9 @@ public class FullscreenActivity extends Activity {
     	    	@Override
     	    	public void onClick(View v) 
     	    	{
-    	    		    String temp = this.mWeatherObtained.getElementsByTagName("yweather:condition").item(0).
+    	    		    String temp = getYahooWeatherXML().getElementsByTagName("yweather:condition").item(0).
     	    				getAttributes().getNamedItem("code").getTextContent();
-    	    			String text = this.mWeatherObtained.getElementsByTagName("yweather:condition").item(0).
+    	    			String text = getYahooWeatherXML().getElementsByTagName("yweather:condition").item(0).
     	    				getAttributes().getNamedItem("text").getTextContent();	
     	    		    double tempConversion = 0.0;
 
@@ -606,5 +606,15 @@ public class FullscreenActivity extends Activity {
 
 		return isPrecipitation;
 	}
+
+	public Document getYahooWeatherXML()
+    {
+    	this.yahooWeatherXML;
+    }
+
+    public void setYahooWeatherXML(Document doc)
+    {
+    	this.yahooWeatherXML = doc;
+    }
 
 }
