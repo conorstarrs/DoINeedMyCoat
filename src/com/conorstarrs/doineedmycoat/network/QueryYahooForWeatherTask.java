@@ -67,6 +67,7 @@ public class QueryYahooForWeatherTask extends AsyncTask <String, String, Documen
 	@Override
 	protected void onPostExecute(Document result) {
 		activityRef.weatherObtained(result);
+		activityRef.setYahooWeatherXML(result);
     	if (dialog.isShowing()) {
             dialog.dismiss();
         }
