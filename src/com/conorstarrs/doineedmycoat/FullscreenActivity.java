@@ -73,6 +73,8 @@ public class FullscreenActivity extends Activity {
     QueryYahooForWeatherTask yW;
 
     boolean isUSorCA = false;
+    String degreesType = "\u2103";
+    Document mWeatherObtained = null;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +82,7 @@ public class FullscreenActivity extends Activity {
     	setContentView(R.layout.activity_fullscreen);	
     	
     	this.refreshButton = (Button)this.findViewById(R.id.dummy_button);
-    	  this.refreshButton.setOnClickListener(new OnClickListener() {
+    	this.refreshButton.setOnClickListener(new OnClickListener() {
     	    @Override
     	    public void onClick(View v) {
         		finish();
@@ -125,7 +127,37 @@ public class FullscreenActivity extends Activity {
 
 		    	TextView txtView = (TextView) findViewById(R.id.fullscreen_content);
 		    	txtView.setText(city + ", " + country);
-	//	        txtView.setPadding(0, 0, 0, 195);
+
+    			this.tempText = (Button)this.findViewById(R.id.weatherText);
+    	 		this.tempText.setOnClickListener(new OnClickListener() {
+    	    	@Override
+    	    	public void onClick(View v) 
+    	    	{
+    	    		    String temp = mWeatherObtained.getElementsByTagName("yweather:condition").item(0).
+    	    				getAttributes().getNamedItem("code").getTextContent();
+    	    			String text = mWeatherObtained.getElementsByTagName("yweather:condition").item(0).
+    	    				getAttributes().getNamedItem("text").getTextContent();	
+    	    		    double tempConversion = 0.0;
+
+    	    			if(degreesType.equals("\u2103"))
+    	    			{
+    	    				tempConversion = Double.parseDouble(temp) * 9 / 5 + 32;
+    						DecimalFormat df = new DecimalFormat("#");
+    						temp = df.format(tempConversion);
+    						degreesType = "\u2109";
+    					}
+    					else
+    					{
+    	    				tempConversion = (Double.parseDouble(temp) - 32) *5 / 9;
+    						DecimalFormat df = new DecimalFormat("#");
+    						temp = df.format(tempConversion);
+    						degreesType = "\u2103";
+    					}
+
+    					TextView weatherText = (TextView) findViewById(R.id.weatherText);
+    					weatherText.setText(text + ", " + temp + degreesType);	
+    	    		}
+    	  		});
 	    	}
     	}
 	    else
@@ -302,7 +334,6 @@ public class FullscreenActivity extends Activity {
 
 	public void weatherObtained(Document result) {
     	NodeList n = result.getElementsByTagName("yweather:condition");
-
     	String code = n.item(0).getAttributes().getNamedItem("code").getTextContent();
     	String text = n.item(0).getAttributes().getNamedItem("text").getTextContent();
     	String temp = n.item(0).getAttributes().getNamedItem("temp").getTextContent();
@@ -319,7 +350,6 @@ public class FullscreenActivity extends Activity {
     	double convertWindToMph = 0.0;
     	double directionDouble = 0.0;
 		double tempToFarenheit = 0.0;
-		String degreesType = "\u2103";
 
 		if(isUSorCA && temp != null)
 		{
