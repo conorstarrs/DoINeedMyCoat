@@ -18,7 +18,7 @@
     android:paddingRight="16dp"
     android:orientation="vertical"
     android:gravity="center_vertical" >
-	  <ImageView
+    <ImageView
         android:id="@+id/_0"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -29,18 +29,20 @@
         android:id="@+id/weatherText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-		android:gravity="top|center"
+	android:gravity="top|center"
         android:keepScreenOn="true"
         android:text="@string/dummy_content"
         android:textColor="#33b5e5"
         android:textSize="21sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:onClick="onClick"                
+        android:clickable="true"/>
     
      <TextView
         android:id="@+id/weatherText2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-		android:gravity="top|center"
+	android:gravity="top|center"
         android:keepScreenOn="true"
         android:text="@string/dummy_content"
         android:textColor="#33b5e5"
@@ -61,7 +63,7 @@
         android:id="@+id/reason"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-		android:gravity="center"
+	android:gravity="center"
         android:keepScreenOn="true"
         android:text="@string/dummy_content"
         android:textColor="#33b5e5"
@@ -71,7 +73,7 @@
         android:id="@+id/fullscreen_content"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-		android:gravity="bottom|center"
+	android:gravity="bottom|center"
         android:keepScreenOn="true"
         android:text="@string/dummy_content"
         android:textColor="#33b5e5"
