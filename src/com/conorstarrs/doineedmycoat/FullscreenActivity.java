@@ -98,14 +98,14 @@ public class FullscreenActivity extends Activity {
         		startActivity(getIntent());
     	    }
     	  });
-	    	if(isNetworkConnected())
-	    	{
+	   if(isNetworkConnected())
+	   {
     	  
     	Toast.makeText(getApplicationContext(), "Finding your location...", Toast.LENGTH_SHORT).show();
     	      	
     	LocationInfoVO locInfo = locationInfo();
     	
-    	if(null != locInfo && locInfo.getAddress().size() > 0)
+    	if(null != locInfo.getAddress() && locInfo.getAddress().size() > 0)
     	{
 	    	String city = "";
 	    	String country = "";
@@ -184,6 +184,15 @@ public class FullscreenActivity extends Activity {
     	  		});
 		
 	    	}
+    		else
+    		{
+				ImageView imgView = (ImageView) findViewById(R.id._0);
+				imgView.setImageResource(R.drawable._na);
+				imgView.setVisibility(1); //visible	
+
+	    		TextView noNetworkText = (TextView) findViewById(R.id.reason);
+	    		noNetworkText.setText("Couldn't find you. :-( Please try again.");
+    		}
     	}
 	    else
 	    {
