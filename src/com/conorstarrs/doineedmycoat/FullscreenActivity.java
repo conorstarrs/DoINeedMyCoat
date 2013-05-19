@@ -289,7 +289,7 @@ public class FullscreenActivity extends Activity {
             // Ask user to enable GPS/network in settings
             gps.showSettingsAlert();
         }
-
+     
 		Geocoder gcd = new Geocoder(this, Locale.getDefault());
 		List<Address> addresses = null;
 
@@ -302,6 +302,8 @@ public class FullscreenActivity extends Activity {
 		locInfoVO.setLatitude(String.valueOf(latitude));
 		locInfoVO.setLongitude(String.valueOf(longitude));
 
+        gps.stopSelf();
+        
 		return locInfoVO;
 	}
 
