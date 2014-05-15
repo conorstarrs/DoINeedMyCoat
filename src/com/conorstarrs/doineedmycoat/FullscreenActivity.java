@@ -191,7 +191,7 @@ public class FullscreenActivity extends Activity {
 				imgView.setVisibility(1); //visible	
 
 	    		TextView noNetworkText = (TextView) findViewById(R.id.reason);
-	    		noNetworkText.setText("Couldn't find you. :-( Please try again.");
+	    		noNetworkText.setText("Couldn't find you. :-( /nPlease try again.");
     		}
     	}
 	    else

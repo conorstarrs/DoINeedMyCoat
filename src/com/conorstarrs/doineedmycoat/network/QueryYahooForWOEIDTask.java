@@ -52,7 +52,7 @@ public class QueryYahooForWOEIDTask extends AsyncTask <String, String, String> {
 	    	doc = db.parse(new URL(yahooURL).openStream());
 
 	    	woeid = doc.getFirstChild().getChildNodes().item(0).
-	    			getChildNodes().item(0).getChildNodes().item(27).
+	    			getChildNodes().item(0).getChildNodes().item(28).
 	    			getTextContent();
 	    	
 	    } catch (ParseException e) {
