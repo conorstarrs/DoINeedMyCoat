@@ -10,7 +10,7 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc.
     -->
-<LinearLayout
+    <LinearLayout
     android:id="@+id/llid"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -29,7 +29,7 @@
         android:id="@+id/weatherText"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-	android:gravity="top|center"
+		android:gravity="top|center"
         android:keepScreenOn="true"
         android:text="@string/dummy_content"
         android:textColor="#33b5e5"
@@ -42,11 +42,11 @@
         android:id="@+id/weatherText2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-	android:gravity="top|center"
+		android:gravity="top|center"
         android:keepScreenOn="true"
         android:text="@string/dummy_content"
         android:textColor="#33b5e5"
-        android:textSize="18sp"/>
+        android:textSize="12sp"/>
     
 	<TextView
         android:id="@+id/weatherResult"
@@ -56,19 +56,81 @@
         android:keepScreenOn="false"
         android:text="@string/dummy_content"
         android:textColor="#33b5e5"
-        android:textSize="120sp"
+        android:textSize="115sp"
         android:textStyle="bold" />
 
-	<TextView
-        android:id="@+id/reason"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-	android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="@string/dummy_content"
-        android:textColor="#33b5e5"
-        android:textSize="18sp"/>
+	<TableRow
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+		android:gravity="center" >
+	        
+			<TextView
+			    android:id="@+id/day1"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:gravity="center"
+			    android:keepScreenOn="true"
+			    android:paddingRight="6dp"
+			    android:text="@string/dummy_content"
+			    android:textColor="#33b5e5"
+			    android:textSize="18sp" />
+	
+			<TextView
+		        android:id="@+id/day2"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:gravity="center"
+		        android:keepScreenOn="true"
+		      	android:paddingRight="6dp"
+		        android:text="@string/dummy_content"
+		        android:textColor="#33b5e5"
+		        android:textSize="18sp" />
+			
+			<TextView
+		        android:id="@+id/day3"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+	        	android:gravity="center"
+		        android:keepScreenOn="true"
+				android:paddingRight="6dp"
+		        android:text="@string/dummy_content"
+		        android:textColor="#33b5e5"
+		        android:textSize="18sp" />
+			
+			<TextView
+		        android:id="@+id/day4"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:gravity="center"
+		        android:keepScreenOn="true"
+			    android:paddingRight="6dp"
+		        android:text="@string/dummy_content"
+		        android:textColor="#33b5e5"
+		        android:textSize="18sp" />
+			
+			<TextView
+		        android:id="@+id/day5"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+				android:gravity="center"
+		        android:keepScreenOn="true"
+			    android:paddingRight="6dp"		        
+		        android:text="@string/dummy_content"
+		        android:textColor="#33b5e5"
+		        android:textSize="18sp" />
+			
+		</TableRow>
 
+				<TextView
+		        android:id="@+id/reason"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+				android:gravity="center"
+		        android:keepScreenOn="true"
+		        android:text="@string/dummy_content"
+		        android:textColor="#33b5e5"
+		        android:textSize="18sp"/>
+	
     <TextView
         android:id="@+id/fullscreen_content"
         android:layout_width="fill_parent"

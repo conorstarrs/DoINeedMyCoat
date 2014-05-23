@@ -191,7 +191,7 @@ public class FullscreenActivity extends Activity {
 				imgView.setVisibility(1); //visible	
 
 	    		TextView noNetworkText = (TextView) findViewById(R.id.reason);
-	    		noNetworkText.setText("Couldn't find you. :-( /nPlease try again.");
+	    		noNetworkText.setText("Couldn't find you. Please try again.");
     		}
     	}
 	    else
@@ -201,7 +201,7 @@ public class FullscreenActivity extends Activity {
 			imgView.setVisibility(1); //visible	
 
 	    	TextView noNetworkText = (TextView) findViewById(R.id.reason);
-	    	noNetworkText.setText("No network connection :-(");
+	    	noNetworkText.setText("No network connection.");
 	   	}
 
         super.onCreate(savedInstanceState);
@@ -368,6 +368,7 @@ public class FullscreenActivity extends Activity {
     	NodeList n = result.getElementsByTagName("yweather:condition");
     	String code = n.item(0).getAttributes().getNamedItem("code").getTextContent();
     	String text = n.item(0).getAttributes().getNamedItem("text").getTextContent();
+    	String date = n.item(0).getAttributes().getNamedItem("date").getTextContent();
     	setTemp(n.item(0).getAttributes().getNamedItem("temp").getTextContent());
     	String wearCoat = "";
     	String reason = "";
@@ -379,6 +380,23 @@ public class FullscreenActivity extends Activity {
     			item(0).getAttributes().getNamedItem("speed").getNodeValue();
     	String windDirection = result.getElementsByTagName("yweather:wind").
     			item(0).getAttributes().getNamedItem("direction").getNodeValue();
+    	
+    	NodeList forecast = result.getElementsByTagName("yweather:forecast");
+    	
+    	int forecastDay1Image = Integer.parseInt(forecast.item(0).getAttributes().getNamedItem("code").getNodeValue());
+    	
+    	String forecastDay2 = forecast.item(1).getAttributes().getNamedItem("day").getNodeValue();
+    	int forecastDay2Image = Integer.parseInt(forecast.item(1).getAttributes().getNamedItem("code").getNodeValue());
+    	
+    	String forecastDay3 = forecast.item(2).getAttributes().getNamedItem("day").getNodeValue();
+    	int forecastDay3Image = Integer.parseInt(forecast.item(2).getAttributes().getNamedItem("code").getNodeValue());
+    	
+    	String forecastDay4 = forecast.item(3).getAttributes().getNamedItem("day").getNodeValue();
+    	int forecastDay4Image = Integer.parseInt(forecast.item(3).getAttributes().getNamedItem("code").getNodeValue());
+    	
+    	String forecastDay5 = forecast.item(4).getAttributes().getNamedItem("day").getNodeValue();
+    	int forecastDay5Image = Integer.parseInt(forecast.item(4).getAttributes().getNamedItem("code").getNodeValue());    	
+    	
     	double convertWindToMph = 0.0;
     	double directionDouble = 0.0;
 		double tempToFarenheit = 0.0;
@@ -442,19 +460,41 @@ public class FullscreenActivity extends Activity {
 
     	TextView weatherResult = (TextView) findViewById(R.id.weatherResult);
     	weatherResult.setText(wearCoat);
-    	weatherResult.setPadding(0, 10, 0, 10);
+    	weatherResult.setPadding(0, -50, 0, 0);
     	
     	TextView weatherText = (TextView) findViewById(R.id.weatherText);
     	weatherText.setText(text + ", " + getTemp() + this.degreesType);
+    	weatherText.setPadding(0, 0, 0, 0);
+    	
+//    	TextView weatherText2 = (TextView) findViewById(R.id.weatherText2);
+//    	weatherText2.setText("\nWind: " + windSpeed + "mph, Direction: " + 
+//    	windDirection + (char) 0x00B0 + "(" + headingToString(directionDouble) + ")" +
+//    	"\nSunrise: " + sunrise + ", Sunset: " + sunset); 
+//    	weatherText2.setPadding(0, -45, 0, 0);
     	
     	TextView weatherText2 = (TextView) findViewById(R.id.weatherText2);
-    	weatherText2.setText("\nWind: " + windSpeed + "mph, Direction: " + 
-    	windDirection + (char) 0x00B0 + "(" + headingToString(directionDouble) + ")" +
-    	"\nSunrise: " + sunrise + ", Sunset: " + sunset); 
-    	weatherText2.setPadding(0, -45, 0, 0);
+    	weatherText2.setText("Observed: " + date); 
+    	weatherText2.setPadding(0, 0, 0, 0);
         
-    	TextView reasonText = (TextView) findViewById(R.id.reason);
-    	reasonText.setText(reason); 
+    	TextView forecast1 = (TextView) findViewById(R.id.day1);
+    	forecast1.setText("Today");
+    	forecast1.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, getWeatherImage(forecastDay1Image));
+    	
+    	TextView forecast2 = (TextView) findViewById(R.id.day2);
+    	forecast2.setText(forecastDay2);
+    	forecast2.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, getWeatherImage(forecastDay2Image));
+    	
+    	TextView forecast3 = (TextView) findViewById(R.id.day3);
+    	forecast3.setText(forecastDay3);
+    	forecast3.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, getWeatherImage(forecastDay3Image));
+    	
+    	TextView forecast4 = (TextView) findViewById(R.id.day4);
+    	forecast4.setText(forecastDay4);
+    	forecast4.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, getWeatherImage(forecastDay4Image));
+    	
+    	TextView forecast5 = (TextView) findViewById(R.id.day5);
+    	forecast5.setText(forecastDay5);
+    	forecast5.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, getWeatherImage(forecastDay5Image));
 	}
 
 	private boolean isNetworkConnected() {
