@@ -71,8 +71,8 @@ public class FullscreenActivity extends Activity {
      */
     private SystemUiHider mSystemUiHider;
     
-    QueryYahooForWOEIDTask yQ;
-    QueryYahooForWeatherTask yW;
+    QueryYahooForWOEIDTask queryYahooForWOEIDTask;
+    QueryYahooForWeatherTask queryYahooForWeatherTask;
 
     boolean isUS = false;
     private String degreesType = "\u2103";
@@ -107,16 +107,32 @@ public class FullscreenActivity extends Activity {
     	
     	if(null != locInfo.getAddress() && locInfo.getAddress().size() > 0)
     	{
-	    	String city = "";
+	    	String locality = null;
 	    	String country = "";
 			if (null != locInfo.getAddress() && locInfo.getAddress().size() > 0) 
 			{
-			    city = locInfo.getAddress().get(0).getLocality();
-			    country = locInfo.getAddress().get(0).getCountryName();
+			    // Try to get city first
+                locality = locInfo.getAddress().get(0).getLocality();
+			    if(locality == null)
+                {
+                    locality = locInfo.getAddress().get(0).getAddressLine(0);
+                }
+                if(locality == null)
+                {
+                    locality = locInfo.getAddress().get(0).getPremises();
+                }
+                if(locality == null)
+                {
+                    locality = locInfo.getAddress().get(0).getPostalCode();
+                }
+                if(locality == null) {
+                    locality = locInfo.getAddress().get(0).getAdminArea();
+                }
+                country = locInfo.getAddress().get(0).getCountryName();
 			}
 			else
 			{
-				city = "Location not found :-(\n";
+				locality = "Location not found :-(\n";
 				country = "Country not found :-(";
 			}
 
@@ -125,16 +141,16 @@ public class FullscreenActivity extends Activity {
 				this.isUS = true;
 			}
 
-	    	Toast.makeText(getApplicationContext(), "Found you in " + city + ".", Toast.LENGTH_SHORT).show();
+	    	Toast.makeText(getApplicationContext(), "Found you in " + locality + ".", Toast.LENGTH_SHORT).show();
 
 			    Context context = FullscreenActivity.this;
 			    ProgressDialog progressDialog = new ProgressDialog(context);
 
-		        yQ = new QueryYahooForWOEIDTask(this, progressDialog);
-		        yQ.execute(locInfo.getLatitude(), locInfo.getLongitude());
+		        queryYahooForWOEIDTask = new QueryYahooForWOEIDTask(this, progressDialog);
+		        queryYahooForWOEIDTask.execute(locInfo.getLatitude(), locInfo.getLongitude());
 
 		    	TextView txtView = (TextView) findViewById(R.id.fullscreen_content);
-		    	txtView.setText(city + ", " + country);        		
+		    	txtView.setText(locality + ", " + country);
         		
         		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         		boolean dialogShown = settings.getBoolean("dialogShown", false);
@@ -360,8 +376,8 @@ public class FullscreenActivity extends Activity {
 	public void woeidObtained(String result) {
 	    Context context = FullscreenActivity.this;
 	    ProgressDialog progressDialog = new ProgressDialog(context);
-        yW = new QueryYahooForWeatherTask(this, progressDialog);
-        yW.execute(result); 
+        queryYahooForWeatherTask = new QueryYahooForWeatherTask(this, progressDialog);
+        queryYahooForWeatherTask.execute(result);
 	}
 
 	public void weatherObtained(Document result) {
